@@ -1,5 +1,73 @@
-<html>
-<body>
-Coming soon...
-</body>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Barlinek flooring calculator</title>
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+		<link rel="stylesheet" href="barlinek.css">
+	</head>
+	<body>
+		<div class="container pb-5">
+			<h1>Barlinek flooring calculator</h1>
+
+			<div class="alert alert-info mt-4 mb-4">
+				The Barlinek flooring calculator is not in any form assosiated with the Barlinek company or its affiliates/partners.<br />
+				This calculator is presented as is and should not be used as an exact messuring tool but rahter than a helping hand when planning your flooring and purchase.
+			</div>
+
+			<form class="clearfix" onsubmit="return calculate()">
+				<div class="row">
+					<div class="col-6 mb-3">
+						<label for="roomLength" class="form-label">Room length (meters)</label>
+	    					<input id="roomLength" type="number" class="form-control" min="0.01" step="0.01" required value="5">
+					</div>
+					<div class="col-6 mb-3">
+						<label for="roomWidth" class="form-label">Room width (meters)</label>
+	    					<input id="roomWidth" type="number" class="form-control" min="0.01" step="0.01" required value="2.5">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6 mb-3">
+						<label for="plankLength" class="form-label">Plank length (millimeters)</label>
+	    					<input id="plankLength" type="number" class="form-control" min="1" step="1" required value="2200">
+					</div>
+					<div class="col-6 mb-3">
+						<label for="plankWidth" class="form-label">Plank width (millimeters)</label>
+	    					<input id="plankWidth" type="number" class="form-control" min="1" step="1" required value="180">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6 mb-3">
+						<label for="packageSize" class="form-label">Planks per package</label>
+	    					<input id="packageSize" type="number" class="form-control" min="1" step="1" required value="7">
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6 mb-3">
+						<label for="wallDistance" class="form-label">Plank distance from wall (millimeters)</label>
+	    					<input id="wallDistance" type="number" class="form-control" min="1" step="1" required value="10">
+					</div>
+					<div class="col-6 mb-3">
+						<label for="direction" class="form-label">Direction</label>
+	    					<select id="direction" class="form-control">
+	    						<option selected value="length">Length</option>
+	    						<option value="width">Width</option>
+	    					</select>
+					</div>
+				</div>
+
+				<button id="calc" class="btn btn-primary float-end" type="submit">Calculate</button>
+			</form>
+
+			<hr />
+
+			<div id="result"></div>
+		</div>
+
+		<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+		<script src="barlinek.js"></script>
+	</body>
 </html>

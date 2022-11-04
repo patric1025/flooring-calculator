@@ -1,0 +1,19 @@
+#result > #planks > .row {
+	margin: 0px;
+}
+
+#result > #planks > .row > div {
+	height: 30px;
+	overflow: hidden;
+	padding: 0px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+#result > #planks > .row > div > span {
+	padding: 0px 10px;
+}
+
+#result > #table > div > span {
+	padding-left: 10px;
+}
