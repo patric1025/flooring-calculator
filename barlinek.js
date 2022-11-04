@@ -1,3 +1,11 @@
+var domains = [
+	"barlinek.cf",
+	"barlinek.ga",
+	"barlinek.gq",
+	"barlinek.ml",
+	"barlinek.tk"
+];
+
 var rules = {
 	"minStartLength": 300,
 	"planks": [
@@ -7,7 +15,7 @@ var rules = {
 };
 
 function calculate() {
-	var result = $("#result").empty().text("Calculating...");
+	var result = $("#result").empty().append("<hr />").text("Calculating...");
 
 	var cutDistance = 0;
 	var direction = $("#direction").val();
@@ -127,7 +135,7 @@ function calculate() {
 	var packagesNeeded = Math.ceil(planksNeeded / packageSize);
 	var planksUnused = (packagesNeeded * packageSize) - planksNeeded;
 
-	result.empty();
+	result.empty().append("<hr />");
 
 	result.append($('<div><b>Room area:</b> ' + parseFloat((roomLengthOrg * roomWidthOrg).toFixed(2)) + ' m<sup>2</sup></div>'));
 	result.append($('<div><b>Minumum start length:</b> ' + rules.minStartLength + ' mm</div>'));
@@ -368,6 +376,12 @@ function validate(roomLength, cutDistance, layout) {
 }
 
 $(document).ready(function() {
+	$(domains).each(function() {
+		if (location.href.indexOf(this) == -1) {
+			$("#domains").append($('<a href="https://' + this + '/">' + this + '</a>'));
+		}
+	});
+
 	var query = parseQuery(location.href.substring(location.href.indexOf("?")));
 
 	if (query.rl) {

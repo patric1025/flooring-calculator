@@ -1,3 +1,12 @@
+#domains {
+	margin-top: 50px;
+	text-align: center;
+}
+
+#domains a {
+	padding: 0px 10px;
+}
+
 #result > #planks > .row {
 	margin: 0px;
 }
