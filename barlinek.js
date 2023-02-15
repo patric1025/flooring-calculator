@@ -22,6 +22,7 @@ function calculate() {
 	var plankLength = parseFloat($("#plankLength").val());
 	var plankWidth = parseFloat($("#plankWidth").val());
 	var packageSize = parseFloat($("#packageSize").val());
+	var removeRows = parseInt($("#removeRows").val());
 	var wallDistance = parseFloat($("#wallDistance").val());
 
 	var roomLengthOrg = parseFloat($("#room" + (direction == "width" ? "Width" : "Length")).val());
@@ -43,6 +44,7 @@ function calculate() {
 	var leftovers = 0;
 	var trash = 0;
 	var planksNeeded = 0;
+	var rowsSkipped = 0;
 
 	for (var i=0; i<rows; i++) {
 		var rowLength = 0;
@@ -52,6 +54,11 @@ function calculate() {
 			"width": (i + 1 == rows ? parseFloat(((rowsOrg - Math.floor(rowsOrg)) * plankWidth).toFixed(2)) : plankWidth),
 			"planks": []
 		});
+		
+		if (i > 0 && removeRows > 0 && (i + 1 + rowsSkipped) % removeRows == 0) {
+			leftovers = 0;
+			rowsSkipped++;
+		}
 
 		if (leftovers > 0) {
 			if (leftovers >= rules.minStartLength) {
@@ -153,6 +160,7 @@ function calculate() {
 
 	var planks = $('<div id="planks"></div>');
 	var table = $('<div id="table"></div>');
+	var hasInvalid = false;
 
 	$(layout).each(function(i) {
 		var row = $('<div class="row"></div>');
@@ -160,8 +168,12 @@ function calculate() {
 
 		$(this.planks).each(function(j) {
 			var percentage = (this.length / roomLength) * 100;
-			row.append($('<div class="' + (this.valid ? "text-bg-secondary" : "text-bg-warning") + ' border" title="' + this.length + ' mm"><span>' + this.length + ' mm</span></div>').width(percentage + "%"))
+			row.append($('<div class="' + (this.valid ? "text-bg-secondary" : "text-bg-danger") + ' border" title="' + this.length + ' mm"><span>' + this.length + ' mm</span></div>').width(percentage + "%"))
 			row2.append($('<span>' + this.length + ' mm</span>'));
+			
+			if (!this.valid) {
+				hasInvalid = true;
+			}
 		});
 
 		row2.append($('<span>(width: ' + this.width + ' mm)</span>'));
@@ -169,6 +181,10 @@ function calculate() {
 		planks.append(row);
 		table.append(row2);
 	});
+	
+	if (hasInvalid) {
+		result.append($('<div class="alert alert-danger">Red planks means that plank joints are too close to each other. Try using "Remove every X rows" to try to fix it.</div>'));
+	}
 
 	result.append(planks);
 	result.append($('<div>&nbsp;</div>'));
@@ -187,6 +203,7 @@ function link() {
 	var packageSize = $("#packageSize").val();
 	var wallDistance = $("#wallDistance").val();
 	var direction = $("#direction").val();
+	var removeRows = $("#removeRows").val();
 
 	var url = location.href.split("?")[0];
 	url += "?rl=" + roomLength;
@@ -196,6 +213,7 @@ function link() {
 	url += "&ps=" + packageSize;
 	url += "&wd=" + wallDistance;
 	url += "&d=" + direction;
+	url += "&rr=" + removeRows;
 
 	navigator.clipboard.writeText(url);
 	alert("Copied to clipboard!");
@@ -410,6 +428,10 @@ $(document).ready(function() {
 
 	if (query.d == "length" || query.d == "width") {
 		$("#direction").val(query.d);
+	}
+
+	if (query.rr) {
+		$("#removeRows").val(query.rr);
 	}
 
 	$("#calc").trigger("click");

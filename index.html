@@ -14,7 +14,7 @@
 
 			<div class="alert alert-info mt-4 mb-4">
 				The Barlinek flooring calculator is not in any form assosiated with the Barlinek company or its affiliates/partners.<br />
-				This calculator is presented as is and should not be used as an exact messuring tool but rather a helping hand when planning your flooring and purchase.
+				This calculator is presented as is and should not be used as an exact messuring tool but rahter than a helping hand when planning your flooring and purchase.
 			</div>
 
 			<form class="clearfix" onsubmit="return calculate()">
@@ -55,6 +55,12 @@
 	    						<option selected value="length">Length</option>
 	    						<option value="width">Width</option>
 	    					</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-6 mb-3">
+						<label for="removeRows" class="form-label">Remove every X rows (try to correct errors)</label>
+	    					<input id="removeRows" type="number" class="form-control" min="0" step="1" required value="0">
 					</div>
 				</div>
 
