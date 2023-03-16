@@ -4,8 +4,8 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>Barlinek flooring calculator</title>
-		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
+		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 		<link rel="stylesheet" href="barlinek.css">
 	</head>
 	<body>
@@ -17,50 +17,88 @@
 				This calculator is presented as is and should not be used as an exact messuring tool but rahter than a helping hand when planning your flooring and purchase.
 			</div>
 
-			<form class="clearfix" onsubmit="return calculate()">
+			<form class="clearfix" onsubmit="return calculate();">
 				<div class="row">
-					<div class="col-6 mb-3">
-						<label for="roomLength" class="form-label">Room length (meters)</label>
-	    					<input id="roomLength" type="number" class="form-control" min="0.01" step="0.01" required value="5">
+					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
+						<label for="roomLength" class="form-label">Room length</label>
+						
+						<div class="input-group">
+		    					<input id="roomLength" type="number" class="form-control" min="0.01" step="0.01" required value="5">
+		    					<span class="input-group-text">meters</span>
+		    				</div>
 					</div>
-					<div class="col-6 mb-3">
-						<label for="roomWidth" class="form-label">Room width (meters)</label>
-	    					<input id="roomWidth" type="number" class="form-control" min="0.01" step="0.01" required value="2.5">
+					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
+						<label for="roomWidth" class="form-label">Room width</label>
+						
+						<div class="input-group">
+	    						<input id="roomWidth" type="number" class="form-control" min="0.01" step="0.01" required value="2.5">
+		    					<span class="input-group-text">meters</span>
+		    				</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-6 mb-3">
-						<label for="plankLength" class="form-label">Plank length (millimeters)</label>
-	    					<input id="plankLength" type="number" class="form-control" min="1" step="1" required value="2200">
+					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
+						<label for="plankLength" class="form-label">Plank length</label>
+						
+						<div class="input-group">
+	    						<input id="plankLength" type="number" class="form-control" min="1" step="1" required value="2200">
+		    					<span class="input-group-text">mm</span>
+		    				</div>
 					</div>
-					<div class="col-6 mb-3">
-						<label for="plankWidth" class="form-label">Plank width (millimeters)</label>
-	    					<input id="plankWidth" type="number" class="form-control" min="1" step="1" required value="180">
+					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
+						<label for="plankWidth" class="form-label">Plank width</label>
+						
+						<div class="input-group">
+	    						<input id="plankWidth" type="number" class="form-control" min="1" step="1" required value="180">
+		    					<span class="input-group-text">mm</span>
+		    				</div>
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-6 mb-3">
+					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
 						<label for="packageSize" class="form-label">Planks per package</label>
 	    					<input id="packageSize" type="number" class="form-control" min="1" step="1" required value="7">
 					</div>
-				</div>
-				<div class="row">
-					<div class="col-6 mb-3">
-						<label for="wallDistance" class="form-label">Plank distance from wall (millimeters)</label>
-	    					<input id="wallDistance" type="number" class="form-control" min="1" step="1" required value="10">
+					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
+						<label for="wallDistance" class="form-label">Plank distance from wall</label>
+						
+						<div class="input-group">
+	    						<input id="wallDistance" type="number" class="form-control" min="1" step="1" required value="10">
+		    					<span class="input-group-text">mm</span>
+		    				</div>
 					</div>
-					<div class="col-6 mb-3">
+					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
 						<label for="direction" class="form-label">Direction</label>
-	    					<select id="direction" class="form-control">
+	    					<select id="direction" class="form-select">
 	    						<option selected value="length">Length</option>
 	    						<option value="width">Width</option>
 	    					</select>
 					</div>
 				</div>
+				
+				<h4>Error correction</h4>
+				
 				<div class="row">
-					<div class="col-6 mb-3">
-						<label for="removeRows" class="form-label">Remove every X rows (try to correct errors)</label>
-	    					<input id="removeRows" type="number" class="form-control" min="0" step="1" required value="0">
+					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
+						<label class="form-label">Try to auto correct</label>
+						<div>
+		    					<input id="autoCorrect" class="btn-check" type="checkbox">
+		    					<label for="autoCorrect" class="btn btn-outline-success">Enable?</label>
+		    				</div>
+					</div>
+					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
+						<label for="removeRows" class="form-label">Remove every X rows</label>
+						<div class="input-group">
+		    					<input id="removeRows" type="number" class="form-control" min="0" step="1" required value="0">
+		    					<button class="btn btn-danger" onclick="document.getElementById('removeRows').value=document.getElementById('removeRows').min;" type="button"><i class="bi bi-trash"></i></button>
+						</div>
+					</div>
+					<div class="col-md-6 mb-3 fix-rows">
+						<label for="fixRow" class="form-label">Set fixed first plank length (row #, plank length)</label>
+						<div class="input-group mb-3">
+		    					<span class="input-group-text">#</span>
+							<input id="fixRow" type="number" class="form-control" min="1" step="1" required value="1">
+		    					<input id="fixPlankLength" type="number" class="form-control" min="0" step="1" required value="0">
+		    					<span class="input-group-text">mm</span>
+							<button id="fix" class="btn btn-success" onclick="addFix()" type="button"><i class="bi bi-plus-lg"></i></button>
+						</div>
+						<div id="fixes"></div>
 					</div>
 				</div>
 
@@ -72,8 +110,8 @@
 			<div id="domains"></div>
 		</div>
 
-		<script src="https://code.jquery.com/jquery-3.6.1.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 		<script src="barlinek.js"></script>
 	</body>
 </html>

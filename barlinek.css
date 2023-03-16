@@ -9,6 +9,17 @@
 
 #result > #planks > .row {
 	margin: 0px;
+	position: relative;
+}
+
+#result > #planks > .row > span {
+	left: -55px;
+	margin: 0px;
+	margin-top: 1px;
+	padding: 0px;
+	position: absolute;
+	text-align: right;
+	width: 50px;
 }
 
 #result > #planks > .row > div {
