@@ -65,7 +65,9 @@ function addFixHtml(row, plankLength) {
 }
 
 function calculate() {
-	var result = $("#result").empty().append("<hr />").text("Calculating...");
+	var calculating = $("#calculating").removeClass("d-none");
+	var result = $("#result").addClass("d-none");
+	var error = result.find("#error").addClass("d-none");
 
 	var autoCorrect = $("#autoCorrect").is(":checked");
 	var cutDistance = 0;
@@ -130,57 +132,67 @@ function calculate() {
 		layoutResult = tryFixLayout(layoutResult, settings, cutDistance);
 	}
 
-	result.empty().append("<hr />");
+	calculating.addClass("d-none")
+	result.removeClass("d-none");
 
-	result.append($('<div><b>Room area:</b> ' + layoutResult.roomSize + ' m<sup>2</sup></div>'));
-	result.append($('<div><b>Minumum start length:</b> ' + rules.minStartLength + ' mm</div>'));
-	result.append($('<div><b>Minumum end length:</b> ' + plankWidth + ' mm</div>'));
-	result.append($('<div><b>Distance between cuts for nearby rows:</b> ' + cutDistance + ' mm</div>'));
-	result.append($('<div><b>Rows:</b> ' + layoutResult.rows + '</div>'));
-	result.append($('<div><b>Width of last row:</b> ' + layoutResult.lastRowWidth + ' mm</div>'));
-	result.append($('<div><b>Planks needed:</b> ' + layoutResult.planksNeeded + '</div>'));
-	result.append($('<div><b>Packages needed:</b> ' + layoutResult.packagesNeeded + '</div>'));
-	result.append($('<div><b>Planks unused:</b> ' + layoutResult.planksUnused + '</div>'));
-	result.append($('<div><b>Trash:</b> ' + (layoutResult.trash >= 1000 ? (layoutResult.trash/1000) + ' meters' : layoutResult.trash + ' mm') + '</div>'));
-	result.append($('<div>&nbsp;</div>'));
-	result.append($('<div class="text-end"><button class="btn btn-primary" onclick="link();" type="button">Copy direct link</button></div>'));
-	result.append($('<div>&nbsp;</div>'));
+	result.find("#resultRoomSize > span").text(layoutResult.roomSize);
+	result.find("#resultMinStartLength > span").text(rules.minStartLength);
+	result.find("#resultPlankWidth > span").text(plankWidth);
+	result.find("#resultCutDistance > span").text(cutDistance);
+	result.find("#resultRows > span").text(layoutResult.rows);
+	result.find("#resultLastRowWidth > span").text(layoutResult.lastRowWidth);
+	result.find("#resultPlanksNeeded > span").text(layoutResult.planksNeeded);
+	result.find("#resultPackagesNeeded > span").text(layoutResult.packagesNeeded);
+	result.find("#resultPlanksUnused > span").text(layoutResult.planksUnused);
+	result.find("#resultTrash > span").text(layoutResult.trash >= 1000 ? (layoutResult.trash/1000) + ' meters' : layoutResult.trash + ' mm');
 
-	var planks = $('<div id="planks"></div>');
-	var table = $('<div id="table"></div>');
+	var planks = result.find("#planks").empty();
+	var table = result.find("table");
+	var thead = table.find("thead");
+	var tbody = table.find("tbody").empty();
 	var hasInvalid = false;
 
-	for (var i=0; i<layoutResult.layout.length; i++) {
-		var iItem = layoutResult.layout[i];
-		var row = $('<div class="row"><span>#' + (i + 1) + '</span></div>');
-		var row2 = $('<div><b>Row ' + (i + 1) + ':</b></div>');
-
-		for (var j=0; j<iItem.planks.length; j++) {
-			var jItem = iItem.planks[j];
-			var percentage = (jItem.length / layoutResult.roomLengthWithDistance) * 100;
-			row.append($('<div class="' + (jItem.valid ? "text-bg-secondary" : "text-bg-danger") + ' border" title="' + jItem.length + ' mm"><span>' + jItem.length + ' mm</span></div>').width(percentage + "%"))
-			row2.append($('<span>' + jItem.length + ' mm</span>'));
-
-			if (!jItem.valid) {
-				hasInvalid = true;
-			}
+	if (layoutResult.layout.length > 0) {
+		var mostPlanks = 0;
+		
+		for (var i=0; i<layoutResult.layout.length; i++) {
+			mostPlanks = Math.max(mostPlanks, layoutResult.layout[i].planks.length);
 		}
-
-		row2.append($('<span>(width: ' + iItem.width + ' mm)</span>'));
-
-		planks.append(row);
-		table.append(row2);
+		
+		thead.find("th:eq(1)").attr("colspan", mostPlanks);
+		
+		for (var i=0; i<layoutResult.layout.length; i++) {
+			var iItem = layoutResult.layout[i];
+			var row = $('<div class="row"><span>#' + (i + 1) + '</span></div>');
+			var tr = $('<tr><th>' + (i + 1) + '</th></tr>');
+	
+			for (var j=0; j<mostPlanks; j++) {
+				if (j<iItem.planks.length) {
+					var jItem = iItem.planks[j];
+					var percentage = (jItem.length / layoutResult.roomLengthWithDistance) * 100;
+					row.append($('<div class="' + (jItem.valid ? "" : "text-bg-danger") + ' border" title="' + jItem.length + ' mm"><span>' + jItem.length + ' mm</span></div>').width(percentage + "%"))
+					tr.append('<td class="' + (jItem.valid ? "" : "text-bg-danger") + '">' + jItem.length + ' mm</td>');
+		
+					if (!jItem.valid) {
+						hasInvalid = true;
+					}
+				} else {
+					tr.append('<td></td>');
+				}
+			}
+	
+			tr.append('<td>' + iItem.width + ' mm</td>');
+	
+			planks.append(row);
+			tbody.append(tr);
+		}
 	}
 
 	if (hasInvalid) {
-		result.append($('<div class="alert alert-danger">Red planks means that plank joints are too close to each other. Use "Error correction" settings to try to fix it.</div>'));
+		error.removeClass("d-none");
 	}
 
-	result.append(planks);
-	result.append($('<div>&nbsp;</div>'));
-	result.append($('<div class="text-end"><button class="btn btn-primary" onclick="link();" type="button">Copy direct link</button></div>'));
-	result.append($('<div>&nbsp;</div>'));
-	result.append(table);
+	result.find("input[name^='output']:checked:first").trigger("change");
 
 	return false;
 }
@@ -395,6 +407,7 @@ function link() {
 	var autoCorrect = $("#autoCorrect").is(":checked");
 	var removeRows = $("#removeRows").val();
 	var fixes = getFixes();
+	var output = $("input[name='output1']:checked").val();
 
 	var kvFixes = [];
 	for (var i=0; i<fixes.length; i++) {
@@ -412,6 +425,7 @@ function link() {
 	url += "&ac=" + autoCorrect;
 	url += "&rr=" + removeRows;
 	url += "&f=" + kvFixes.join(",");
+	url += "&o=" + output;
 
 	navigator.clipboard.writeText(url);
 	alert("Copied to clipboard!");
@@ -834,7 +848,7 @@ $(document).ready(function() {
 	}
 
 	if (query.ac) {
-		$("#autoCorrect").attr("checked", (query.ac == "true"));
+		$("#autoCorrect").prop("checked", (query.ac == "true"));
 	}
 
 	if (query.rr) {
@@ -854,6 +868,10 @@ $(document).ready(function() {
 		}
 	}
 	
+	if (query.o == "layout" || query.o == "list") {
+		$("input[name^='output'][value='" + query.o + "']").prop("checked", true);
+	}
+	
 	$("#autoCorrect").change(function() {
 		toggleErrorCorrection(!$(this).is(":checked"));
 	}).trigger("change");
@@ -863,6 +881,19 @@ $(document).ready(function() {
 			e.preventDefault();
 			$(this).closest("div").find("button").trigger("click");
 		}
+	});
+	
+	$("#result input[name^='output']").change(function() {
+		if (this.value == "list") {
+			$("#result #planks").addClass("d-none");
+			$("#result table").removeClass("d-none");
+		} else {
+			$("#result table").addClass("d-none");
+			$("#result #planks").removeClass("d-none");
+		}
+		
+		var rbs = $("input[name^='output'][value='" + this.value + "']").not(this);
+		rbs.prop("checked", $(this).prop("checked"));
 	});
 
 	setTimeout(function() {
