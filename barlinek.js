@@ -239,8 +239,8 @@ function getLayout(settings) {
 	var plankLeftovers = [];
 	var rowsSkipped = 0;
 
-	var roomLengthWithDistance = (settings.roomLength * 1000) - (settings.wallDistance * 2);
-	var roomWidthWithDistance = (settings.roomWidth * 1000) -  (settings.wallDistance * 2);
+	var roomLengthWithDistance = Math.round((settings.roomLength * 1000) - (settings.wallDistance * 2));
+	var roomWidthWithDistance = Math.round((settings.roomWidth * 1000) -  (settings.wallDistance * 2));
 
 	var rowsOrg = roomWidthWithDistance / settings.plankWidth;
 	var rows = Math.ceil(rowsOrg);
@@ -347,7 +347,7 @@ function getLayout(settings) {
 
 					diff = settings.plankWidth;
 				}
-
+				
 				result.layout[i].planks.push({
 					"start": rowLength,
 					"stop": rowLength + diff,
