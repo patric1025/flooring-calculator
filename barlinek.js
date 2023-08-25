@@ -1,8 +1,6 @@
 var domains = [
 	"barlinek.cf",
-	"barlinek.ga",
 	"barlinek.gq",
-	"barlinek.ml",
 	"barlinek.tk"
 ];
 
