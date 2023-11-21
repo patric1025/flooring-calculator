@@ -1,6 +1,8 @@
 var domains = [
 	"barlinek.cf",
+	"barlinek.ga",
 	"barlinek.gq",
+	"barlinek.ml",
 	"barlinek.tk"
 ];
 
@@ -64,6 +66,7 @@ function addFixHtml(row, plankLength) {
 
 function calculate() {
 	var calculating = $("#calculating").removeClass("d-none");
+	var fixRowError = $("#fixRowError").addClass("d-none");
 	var result = $("#result").addClass("d-none");
 	var error = result.find("#error").addClass("d-none");
 
@@ -96,18 +99,19 @@ function calculate() {
 	});
 
 	if (errorFixes1.length > 0 || errorFixes2.length > 0) {
-		result.empty().append('<hr />');
-		var error = $('<div class="alert alert-warning"></div>');
+		var fixRowError1 = fixRowError.find("#fixRowError1").addClass("d-none");
+		var fixRowError2 = fixRowError.find("#fixRowError2").addClass("d-none");
 
 		if (errorFixes1.length > 0) {
-			error.append('<div>One or more "fixed first plank length" lengths are shorter than minimum length (' + rules.minStartLength + ' mm)</div>');
+			fixRowError1.removeClass("d-none").find("span").text(rules.minStartLength);
 		}
 
 		if (errorFixes2.length > 0) {
-			error.append('<div >One or more "' + $("label[for='fixRow']").text() + '" lengths are longer than plank length (' + plankLength + ' mm)</div>');
+			fixRowError2.removeClass("d-none").find("span").text(plankLength);
 		}
 
-		result.append(error);
+		calculating.addClass("d-none");
+		fixRowError.removeClass("d-none");
 
 		return false;
 	}
