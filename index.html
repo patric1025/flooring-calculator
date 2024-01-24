@@ -14,7 +14,7 @@
 
 			<div class="alert alert-info mt-4 mb-4">
 				The Barlinek flooring calculator is not in any form assosiated with the Barlinek company or its affiliates/partners.<br />
-				This calculator is presented as is and should not be used as an exact messuring tool but rahter a helping hand when planning your flooring and purchase.
+				This calculator is presented as is and should not be used as an exact messuring tool but rather a helping hand when planning your flooring installation and purchase.
 			</div>
 
 			<form class="clearfix" onsubmit="return calculate();">
@@ -89,16 +89,59 @@
 		    					<button class="btn btn-danger" onclick="document.getElementById('removeRows').value=document.getElementById('removeRows').min;" type="button"><i class="bi bi-trash"></i></button>
 						</div>
 					</div>
-					<div class="col-md-6 mb-3 fix-rows">
-						<label for="fixRow" class="form-label">Set fixed first plank length (row #, plank length)</label>
-						<div class="input-group mb-3">
-		    					<span class="input-group-text">#</span>
-							<input id="fixRow" type="number" class="form-control" min="1" step="1" required value="1">
-		    					<input id="fixPlankLength" type="number" class="form-control" min="0" step="1" required value="0">
-		    					<span class="input-group-text">mm</span>
-							<button id="fix" class="btn btn-success" onclick="addFix()" type="button"><i class="bi bi-plus-lg"></i></button>
+					<div class="mb-3 fix-rows">
+						<h5>Manual fixes</h5>
+
+						<div class="row template">
+							<div class="col-sm-12 col-lg-6">
+								<div class="row">
+									<div class="col">
+										<label for="fixRow" data-template="false">Row #</label>
+										<label class="d-lg-none d-none" data-template="true">Row #</label>
+										<div class="input-group mb-3">
+						    					<span class="input-group-text">#</span>
+											<input id="fixRow" type="number" class="form-control" min="1" step="1" required value="1">
+										</div>
+									</div>
+									<div class="col">
+										<label for="fixPlankLength" data-template="false">First plank length</label>
+										<label class="d-lg-none d-none" data-template="true">First plank length</label>
+										<div class="input-group mb-3">
+						    					<input id="fixPlankLength" type="number" class="form-control" min="0" step="1" required value="0">
+						    					<span class="input-group-text">mm</span>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col-sm-12 col-lg-6">
+								<div class="row">
+									<div class="col-5">
+										<label for="fixRowStart" data-template="false">Row start</label>
+										<label class="d-lg-none d-none" data-template="true">Row start</label>
+										<div class="input-group mb-3">
+						    					<input id="fixRowStart" type="number" class="form-control" step="1" required value="0">
+						    					<span class="input-group-text">mm</span>
+										</div>
+									</div>
+									<div class="col-5">
+										<label for="fixRowEnd" data-template="false">Row end</label>
+										<label class="d-lg-none d-none" data-template="true">Row end</label>
+										<div class="input-group mb-3">
+						    					<input id="fixRowEnd" type="number" class="form-control" step="1" required value="0">
+						    					<span class="input-group-text">mm</span>
+										</div>
+									</div>
+									<div class="col-2 pt-4 text-end text-lg-start" data-template="false">
+										<button class="btn btn-success" onclick="addFix()" type="button"><i class="bi bi-plus-lg"></i></button>
+									</div>
+									<div class="col-2 pt-4 pt-lg-0 text-end text-lg-start d-none" data-template="true">
+										<button class="btn btn-danger" onclick="deleteFix(this)" type="button"><i class="bi bi-trash"></i></button>
+									</div>
+								</div>
+							</div>
 						</div>
-						<div id="fixes"></div>
+						
+						<div id="fixes" class="mt-3 mt-md-0"></div>
 					</div>
 				</div>
 
@@ -113,8 +156,9 @@
 				<hr />
 				
 				<div class="alert alert-warning">
-					<div id="fixRowError1" class="d-none">One or more "Set fixed first plank length" lengths are shorter than minimum length (<span></span> mm)</div>
-					<div id="fixRowError2" class="d-none">One or more "Set fixed first plank length" lengths are longer than plank length (<span></span> mm)</div>
+					<div id="fixRowError1" class="d-none">One or more "Set first plank length and row position" have length and position unset</div>
+					<div id="fixRowError2" class="d-none">One or more "Set first plank length and row position" lengths are shorter than minimum length (<span></span> mm)</div>
+					<div id="fixRowError3" class="d-none">One or more "Set first plank length and row position" lengths are longer than plank length (<span></span> mm)</div>
 				</div>
 			</div>
 
@@ -135,7 +179,7 @@
 				<div>&nbsp;</div>
 
 				<div>
-					<div class="float-end"><button class="btn btn-primary" onclick="link();" type="button">Copy direct link</button></div>
+					<div class="float-end"><button class="btn btn-primary" onclick="getLink();" type="button">Copy direct link</button></div>
 	
 					<div class="btn-group">
 						<input id="output1Layout" name="output1" type="radio" class="btn-check" value="layout" checked />
@@ -165,7 +209,7 @@
 				<div>&nbsp;</div>
 
 				<div>
-					<div class="float-end"><button class="btn btn-primary" onclick="link();" type="button">Copy direct link</button></div>
+					<div class="float-end"><button class="btn btn-primary" onclick="getLink();" type="button">Copy direct link</button></div>
 	
 					<div class="btn-group">
 						<input id="output2Layout" name="output2" type="radio" class="btn-check" value="layout" checked />
