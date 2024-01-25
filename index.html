@@ -59,7 +59,15 @@
 						<label for="wallDistance" class="form-label">Plank distance from wall</label>
 						
 						<div class="input-group">
-	    						<input id="wallDistance" type="number" class="form-control" min="1" step="1" required value="10">
+	    						<input id="wallDistance" type="number" class="form-control" min="1" step="1" required value="5">
+		    					<span class="input-group-text">mm</span>
+		    				</div>
+					</div>
+					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
+						<label for="firstRowWidth" class="form-label">Width of first row</label>
+						
+						<div class="input-group">
+	    						<input id="firstRowWidth" type="number" class="form-control" data-copy="#plankWidth" min="1" step="1" required value="180">
 		    					<span class="input-group-text">mm</span>
 		    				</div>
 					</div>
@@ -160,8 +168,12 @@
 					<div id="fixRowError2" class="d-none">One or more "Set first plank length and row position" lengths are shorter than minimum length (<span></span> mm)</div>
 					<div id="fixRowError3" class="d-none">One or more "Set first plank length and row position" lengths are longer than plank length (<span></span> mm)</div>
 				</div>
+				
+				<div class="alert alert-danger">
+					<div id="fixRowError4" class="d-none">Last row width (<span></span> mm) is greather than maximum plank width (<span></span> mm). Try changing Width of first row</div>
+				</div>
 			</div>
-
+			
 			<div id="result" class="d-none">
 				<hr />
 				
@@ -170,6 +182,7 @@
 				<div id="resultPlankWidth"><b>Minumum end length:</b> <span></span> mm</div>
 				<div id="resultCutDistance"><b>Distance between cuts for nearby rows:</b> <span></span> mm</div>
 				<div id="resultRows"><b>Rows:</b> <span></span></div>
+				<div id="resultFirstRowWidth"><b>Width of first row:</b> <span></span> mm</div>
 				<div id="resultLastRowWidth"><b>Width of last row:</b> <span></span> mm</div>
 				<div id="resultPlanksNeeded"><b>Planks needed:</b> <span></span></div>
 				<div id="resultPackagesNeeded"><b>Packages needed:</b> <span></span></div>
@@ -191,7 +204,12 @@
 
 				<div>&nbsp;</div>
 				
-				<div id="error" class="alert alert-danger d-none">Red planks means that plank joints are too close to each other. Use "Error correction" settings to try to fix it.</div>
+				<div id="errors" class="d-none">
+					<div class="alert alert-danger">
+						<div id="error1" class="d-none">Red planks means that plank joints are too close to each other. Use "Error correction" settings to try to fix it.</div>
+						<div id="error2" class="d-none">The width of the last row is greather than maximum plank width (<span></span> mm). Increase "Width of first row" to try to fix it.</div>
+					</div>
+				</div>
 				
 				<div id="planks" class="d-none"></div>
 

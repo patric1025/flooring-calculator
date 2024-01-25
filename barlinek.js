@@ -106,7 +106,7 @@ function calculate() {
 	var calculating = $("#calculating").removeClass("d-none");
 	var fixRowError = $("#fixRowError").addClass("d-none");
 	var result = $("#result").addClass("d-none");
-	var error = result.find("#error").addClass("d-none");
+	var errors = result.find("#errors").addClass("d-none");
 
 	var autoCorrect = $("#autoCorrect").is(":checked");
 	var cutDistance = 0;
@@ -144,7 +144,7 @@ function calculate() {
 		var fixRowError1 = fixRowError.find("#fixRowError1").addClass("d-none");
 		var fixRowError2 = fixRowError.find("#fixRowError2").addClass("d-none");
 		var fixRowError3 = fixRowError.find("#fixRowError3").addClass("d-none");
-
+	
 		if (errorFixes1.length > 0) {
 			fixRowError1.removeClass("d-none");
 		}
@@ -181,7 +181,7 @@ function calculate() {
 		layoutResult = tryFixLayout(layoutResult, settings, cutDistance);
 	}
 
-	calculating.addClass("d-none")
+	calculating.addClass("d-none");
 	result.removeClass("d-none");
 
 	result.find("#resultRoomSize > span").text(layoutResult.roomSize);
@@ -189,6 +189,7 @@ function calculate() {
 	result.find("#resultPlankWidth > span").text(plankWidth);
 	result.find("#resultCutDistance > span").text(cutDistance);
 	result.find("#resultRows > span").text(layoutResult.rows);
+	result.find("#resultFirstRowWidth > span").text(layoutResult.firstRowWidth);
 	result.find("#resultLastRowWidth > span").text(layoutResult.lastRowWidth);
 	result.find("#resultPlanksNeeded > span").text(layoutResult.planksNeeded);
 	result.find("#resultPackagesNeeded > span").text(layoutResult.packagesNeeded);
@@ -268,9 +269,21 @@ function calculate() {
 			tbody.append(tr);
 		}
 	}
-
-	if (hasInvalid) {
-		error.removeClass("d-none");
+	
+	if (hasInvalid || layoutResult.lastRowWidth > settings.plankWidth) {
+		var error1 = errors.find("#error1").addClass("d-none");
+		var error2 = errors.find("#error2").addClass("d-none");
+		
+		if (hasInvalid) {
+			error1.removeClass("d-none");
+		}
+		
+		if (layoutResult.lastRowWidth > settings.plankWidth) {
+			error2.removeClass("d-none").find("span").text(settings.plankWidth);
+			planks.find("div.row:last > div").addClass("text-bg-danger");
+		}
+		
+		errors.removeClass("d-none");
 	}
 
 	result.find("input[name^='output']:checked:first").trigger("change");
@@ -307,6 +320,7 @@ function getFixes() {
 
 function getLayout(settings) {
 	var result = {
+		"firstRowWidth": settings.plankWidth,
 		"lastRowWidth": 0,
 		"layout": [],
 		"packagesNeeded": 0,
@@ -318,6 +332,10 @@ function getLayout(settings) {
 		"rows": rows,
 		"trash": 0
 	};
+	
+	if (reInteger.test($("#firstRowWidth").val()) && parseInt($("#firstRowWidth").val()) < settings.plankWidth) {
+		result.firstRowWidth = parseInt($("#firstRowWidth").val());
+	}
 
 	var leftovers = 0;
 	var plankLeftovers = [];
@@ -344,11 +362,21 @@ function getLayout(settings) {
 		if (fix && fix.rowEnd != 0) {
 			maxRowLength += fix.rowEnd;
 		}
+		
+		var rowWidth = (i + 1 == rows ? parseFloat(((rowsOrg - Math.floor(rowsOrg)) * settings.plankWidth).toFixed(2)) : settings.plankWidth);
+		
+		if (result.firstRowWidth < settings.plankWidth) {
+			if (i == 0) {
+				rowWidth = result.firstRowWidth;
+			} else if (i + 1 == rows) {
+				rowWidth += (settings.plankWidth - result.firstRowWidth);
+			}
+		} 
 
 		result.layout.push({
 			"row": i + 1,
 			"length": maxRowLength,
-			"width": (i + 1 == rows ? parseFloat(((rowsOrg - Math.floor(rowsOrg)) * settings.plankWidth).toFixed(2)) : settings.plankWidth),
+			"width": rowWidth,
 			"position": {
 				"start": (fix && fix.rowStart != 0 ? fix.rowStart : 0),
 				"end": (fix && fix.rowEnd != 0 ? fix.rowEnd : 0)
@@ -489,6 +517,7 @@ function getLink() {
 	var plankWidth = $("#plankWidth").val();
 	var packageSize = $("#packageSize").val();
 	var wallDistance = $("#wallDistance").val();
+	var firstRowWidth = $("#firstRowWidth").val();
 	var direction = $("#direction").val();
 	var autoCorrect = $("#autoCorrect").is(":checked");
 	var removeRows = $("#removeRows").val();
@@ -507,6 +536,7 @@ function getLink() {
 	url += "&pw=" + plankWidth;
 	url += "&ps=" + packageSize;
 	url += "&wd=" + wallDistance;
+	url += "&frw=" + firstRowWidth;
 	url += "&d=" + direction;
 	url += "&ac=" + autoCorrect;
 	url += "&rr=" + removeRows;
@@ -762,6 +792,10 @@ $(document).ready(function() {
 		$("#wallDistance").val(query.wd);
 	}
 
+	if (query.frw) {
+		$("#firstRowWidth").val(query.frw);
+	}
+
 	if (query.d == "length" || query.d == "width") {
 		$("#direction").val(query.d);
 	}
@@ -790,6 +824,19 @@ $(document).ready(function() {
 	if (query.o == "layout" || query.o == "list") {
 		$("input[name^='output'][value='" + query.o + "']").prop("checked", true);
 	}
+	
+	$("[data-copy]").each(function() {
+		var copyTo = $(this);
+		
+		$(copyTo.data("copy")).change(function() {
+			var copyFrom = $(this);
+			
+			if (reInteger.test(copyFrom.val())) {
+				copyTo.attr("max", copyFrom.val());
+				copyTo.val(copyFrom.val());
+			}
+		});
+	});
 	
 	$("#autoCorrect").change(function() {
 		toggleErrorCorrection($(this).is(":checked"));
