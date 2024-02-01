@@ -269,18 +269,25 @@ function calculate() {
 			tbody.append(tr);
 		}
 	}
-	
-	if (hasInvalid || layoutResult.lastRowWidth > settings.plankWidth) {
+
+	if (hasInvalid || layoutResult.lastRowWidth > settings.plankWidth || layoutResult.lastRowWidth < (settings.plankWidth / 2)) {
 		var error1 = errors.find("#error1").addClass("d-none");
 		var error2 = errors.find("#error2").addClass("d-none");
+		var error3 = errors.find("#error3").addClass("d-none");
+		errors.find(".alert").addClass("d-none");
 		
 		if (hasInvalid) {
-			error1.removeClass("d-none");
+			error1.removeClass("d-none").closest(".alert").removeClass("d-none");
 		}
 		
 		if (layoutResult.lastRowWidth > settings.plankWidth) {
-			error2.removeClass("d-none").find("span").text(settings.plankWidth);
-			planks.find("div.row:last > div").addClass("text-bg-danger");
+			error2.removeClass("d-none").find("span").text(settings.plankWidth).closest(".alert").removeClass("d-none");
+			planks.find("div.row:last").addClass("border border-2 border-danger");
+			tbody.find("tr:last > td:last").addClass("text-bg-danger");
+		} else if (layoutResult.lastRowWidth < (settings.plankWidth / 2)) {
+			error3.removeClass("d-none").find("span").text(layoutResult.lastRowWidth).closest(".alert").removeClass("d-none");
+			planks.find("div.row:last").addClass("border border-2 border-info");
+			tbody.find("tr:last > td:last").addClass("text-bg-info");
 		}
 		
 		errors.removeClass("d-none");

@@ -170,7 +170,7 @@
 				</div>
 				
 				<div class="alert alert-danger">
-					<div id="fixRowError4" class="d-none">Last row width (<span></span> mm) is greather than maximum plank width (<span></span> mm). Try changing Width of first row</div>
+					<div id="fixRowError4" class="d-none">Last row width (<span></span> mm) is greather than maximum plank width (<span></span> mm). Try changing "Width of first row".</div>
 				</div>
 			</div>
 			
@@ -205,7 +205,11 @@
 				<div>&nbsp;</div>
 				
 				<div id="errors" class="d-none">
-					<div class="alert alert-danger">
+					<div class="alert alert-info d-none">
+						<div id="error3" class="d-none">The width of the last row is <span></span> mm. If you wish to increase the width of the last row, then decrease "Width of first row".</div>
+					</div>
+					
+					<div class="alert alert-danger d-none">
 						<div id="error1" class="d-none">Red planks means that plank joints are too close to each other. Use "Error correction" settings to try to fix it.</div>
 						<div id="error2" class="d-none">The width of the last row is greather than maximum plank width (<span></span> mm). Increase "Width of first row" to try to fix it.</div>
 					</div>
