@@ -3,17 +3,16 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<title>Barlinek flooring calculator</title>
+		<title>Flooring calculator</title>
 		<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-		<link rel="stylesheet" href="barlinek.css">
+		<link rel="stylesheet" href="style.css">
 	</head>
 	<body>
 		<div class="container pb-5">
-			<h1>Barlinek flooring calculator</h1>
+			<h1>Flooring calculator</h1>
 
 			<div class="alert alert-info mt-4 mb-4">
-				The Barlinek flooring calculator is not in any form assosiated with the Barlinek company or its affiliates/partners.<br />
 				This calculator is presented as is and should not be used as an exact messuring tool but rather a helping hand when planning your flooring installation and purchase.
 			</div>
 
@@ -150,6 +149,16 @@
 						</div>
 						
 						<div id="fixes" class="mt-3 mt-md-0"></div>
+						
+						<div class="row">
+							<div class="col-12 mb-3">
+								<label class="form-label">Repeat manual fixes</label>
+								<div>
+				    					<input id="repeatFixes" class="btn-check" type="checkbox">
+				    					<label for="repeatFixes" class="btn btn-outline-success">Enable?</label>
+				    				</div>
+							</div>
+						</div>
 					</div>
 				</div>
 
@@ -241,12 +250,10 @@
 					</div>
 				</div>
 			</div>
-			
-			<div id="domains"></div>
 		</div>
 
 		<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
-		<script src="barlinek.js"></script>
+		<script src="script.js"></script>
 	</body>
 </html>
