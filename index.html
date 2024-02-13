@@ -79,84 +79,94 @@
 					</div>
 				</div>
 				
-				<h4>Error correction</h4>
+				<div id="errorCorrection" class="accordion accordion-flush">
+					<div class="accordion-item">
+						<h4 class="accordion-header">
+							<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#errorCorrectionBody">
+								Error correction <span></span>
+							</button>
+						</h4>
+						<div id="errorCorrectionBody" class="accordion-collapse collapse">
+							<div class="accordion-body">
+								<div class="row">
+									<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
+										<label class="form-label">Try to auto correct</label>
+										<div>
+						    					<input id="autoCorrect" class="btn-check" type="checkbox">
+						    					<label for="autoCorrect" class="btn btn-outline-success">Enable?</label>
+						    				</div>
+									</div>
+									<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
+										<label for="removeRows" class="form-label">Remove every X rows</label>
+										<div class="input-group">
+						    					<input id="removeRows" type="number" class="form-control" min="0" step="1" required value="0">
+						    					<button class="btn btn-danger" onclick="document.getElementById('removeRows').value=document.getElementById('removeRows').min;" type="button"><i class="bi bi-trash"></i></button>
+										</div>
+									</div>
+									<div class="mb-3 fix-rows">
+										<h5>Manual fixes</h5>
 				
-				<div class="row">
-					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
-						<label class="form-label">Try to auto correct</label>
-						<div>
-		    					<input id="autoCorrect" class="btn-check" type="checkbox">
-		    					<label for="autoCorrect" class="btn btn-outline-success">Enable?</label>
-		    				</div>
-					</div>
-					<div class="col-sm-6 col-lg-4 col-xl-3 mb-3">
-						<label for="removeRows" class="form-label">Remove every X rows</label>
-						<div class="input-group">
-		    					<input id="removeRows" type="number" class="form-control" min="0" step="1" required value="0">
-		    					<button class="btn btn-danger" onclick="document.getElementById('removeRows').value=document.getElementById('removeRows').min;" type="button"><i class="bi bi-trash"></i></button>
-						</div>
-					</div>
-					<div class="mb-3 fix-rows">
-						<h5>Manual fixes</h5>
-
-						<div class="row template">
-							<div class="col-sm-12 col-lg-6">
-								<div class="row">
-									<div class="col">
-										<label for="fixRow" data-template="false">Row #</label>
-										<label class="d-lg-none d-none" data-template="true">Row #</label>
-										<div class="input-group mb-3">
-						    					<span class="input-group-text">#</span>
-											<input id="fixRow" type="number" class="form-control" min="1" step="1" required value="1">
+										<div class="row template">
+											<div class="col-sm-6 col-md-4 col-lg-2">
+												<label for="fixRow" data-template="false">Row #</label>
+												<label class="d-lg-none d-none" data-template="true">Row #</label>
+												<div class="input-group mb-3">
+								    					<span class="input-group-text">#</span>
+													<input id="fixRow" type="number" class="form-control" min="1" step="1" required value="1">
+												</div>
+											</div>
+											<div class="col-sm-6 col-md-4 col-lg-2">
+												<label for="fixPlankLength" data-template="false">First plank length</label>
+												<label class="d-lg-none d-none" data-template="true">First plank length</label>
+												<div class="input-group mb-3">
+								    					<input id="fixPlankLength" type="number" class="form-control" min="0" step="1" required value="0">
+								    					<span class="input-group-text">mm</span>
+												</div>
+											</div>
+											<div class="col-sm-6 col-md-4 col-lg-2">
+												<label for="fixRowStart" data-template="false">Row start</label>
+												<label class="d-lg-none d-none" data-template="true">Row start</label>
+												<div class="input-group mb-3">
+								    					<input id="fixRowStart" type="number" class="form-control" step="1" required value="0">
+								    					<span class="input-group-text">mm</span>
+												</div>
+											</div>
+											<div class="col-sm-6 col-md-4 col-lg-2">
+												<label for="fixRowEnd" data-template="false">Row end</label>
+												<label class="d-lg-none d-none" data-template="true">Row end</label>
+												<div class="input-group mb-3">
+								    					<input id="fixRowEnd" type="number" class="form-control" step="1" required value="0">
+								    					<span class="input-group-text">mm</span>
+												</div>
+											</div>
+											<div class="col-6 col-md-4 col-lg-2">
+												<label data-template="false">Use cut on same row</label>
+												<div>
+								    					<input id="fixUseRowCut" class="btn-check" type="checkbox">
+								    					<label for="fixUseRowCut" class="btn btn-outline-success">Enable?</label>
+								    				</div>
+											</div>
+											<div class="col-6 col-md-4 col-lg-2 pt-4 text-end text-lg-start" data-template="false">
+												<button class="btn btn-success" onclick="addFix()" type="button"><i class="bi bi-plus-lg"></i></button>
+											</div>
+											<div class="col-6 col-md-4 col-lg-2 pt-lg-0 text-end text-lg-start d-none" data-template="true">
+												<button class="btn btn-danger" onclick="deleteFix(this)" type="button"><i class="bi bi-trash"></i></button>
+											</div>
 										</div>
-									</div>
-									<div class="col">
-										<label for="fixPlankLength" data-template="false">First plank length</label>
-										<label class="d-lg-none d-none" data-template="true">First plank length</label>
-										<div class="input-group mb-3">
-						    					<input id="fixPlankLength" type="number" class="form-control" min="0" step="1" required value="0">
-						    					<span class="input-group-text">mm</span>
+										
+										<div id="fixes" class="mt-3 mt-md-0"></div>
+										
+										<div class="row">
+											<div class="col-12 mb-3">
+												<label class="form-label">Repeat manual fixes</label>
+												<div>
+								    					<input id="repeatFixes" class="btn-check" type="checkbox">
+								    					<label for="repeatFixes" class="btn btn-outline-success">Enable?</label>
+								    				</div>
+											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-							<div class="col-sm-12 col-lg-6">
-								<div class="row">
-									<div class="col-5">
-										<label for="fixRowStart" data-template="false">Row start</label>
-										<label class="d-lg-none d-none" data-template="true">Row start</label>
-										<div class="input-group mb-3">
-						    					<input id="fixRowStart" type="number" class="form-control" step="1" required value="0">
-						    					<span class="input-group-text">mm</span>
-										</div>
-									</div>
-									<div class="col-5">
-										<label for="fixRowEnd" data-template="false">Row end</label>
-										<label class="d-lg-none d-none" data-template="true">Row end</label>
-										<div class="input-group mb-3">
-						    					<input id="fixRowEnd" type="number" class="form-control" step="1" required value="0">
-						    					<span class="input-group-text">mm</span>
-										</div>
-									</div>
-									<div class="col-2 pt-4 text-end text-lg-start" data-template="false">
-										<button class="btn btn-success" onclick="addFix()" type="button"><i class="bi bi-plus-lg"></i></button>
-									</div>
-									<div class="col-2 pt-4 pt-lg-0 text-end text-lg-start d-none" data-template="true">
-										<button class="btn btn-danger" onclick="deleteFix(this)" type="button"><i class="bi bi-trash"></i></button>
-									</div>
-								</div>
-							</div>
-						</div>
-						
-						<div id="fixes" class="mt-3 mt-md-0"></div>
-						
-						<div class="row">
-							<div class="col-12 mb-3">
-								<label class="form-label">Repeat manual fixes</label>
-								<div>
-				    					<input id="repeatFixes" class="btn-check" type="checkbox">
-				    					<label for="repeatFixes" class="btn btn-outline-success">Enable?</label>
-				    				</div>
 							</div>
 						</div>
 					</div>
@@ -176,10 +186,6 @@
 					<div id="fixRowError1" class="d-none">One or more "Set first plank length and row position" have length and position unset</div>
 					<div id="fixRowError2" class="d-none">One or more "Set first plank length and row position" lengths are shorter than minimum length (<span></span> mm)</div>
 					<div id="fixRowError3" class="d-none">One or more "Set first plank length and row position" lengths are longer than plank length (<span></span> mm)</div>
-				</div>
-				
-				<div class="alert alert-danger">
-					<div id="fixRowError4" class="d-none">Last row width (<span></span> mm) is greather than maximum plank width (<span></span> mm). Try changing "Width of first row".</div>
 				</div>
 			</div>
 			
@@ -216,6 +222,7 @@
 				<div id="errors" class="d-none">
 					<div class="alert alert-info d-none">
 						<div id="error3" class="d-none">The width of the last row is <span></span> mm. If you wish to increase the width of the last row, then decrease "Width of first row".</div>
+						<div id="error4" class="d-none">The length of the last plank of one or more rows is less than 100 mm. If you wish to increase the length of the last plank, then decrease "First plank length" for that row.</div>
 					</div>
 					
 					<div class="alert alert-danger d-none">

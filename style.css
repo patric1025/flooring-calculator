@@ -1,10 +1,19 @@
-#domains {
-	margin-top: 50px;
-	text-align: center;
+#errorCorrection .accordion-button, #errorCorrection .accordion-button:focus {
+	background: none;
+	box-shadow: none;
+	color: #000000;
+	font-size: inherit;
+	margin: 0px;
+	margin-bottom: .5rem;
+	padding: 0px;
 }
 
-#domains a {
-	padding: 0px 10px;
+#errorCorrection .accordion-button span {
+	margin-left: 5px;
+}
+
+#errorCorrection .accordion-body {
+	padding: 0px;
 }
 
 #result > #planks > .row {

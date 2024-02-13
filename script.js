@@ -16,6 +16,7 @@ function addFix() {
 		var fixPlankLength = parseInt($("#fixPlankLength").val());
 		var fixRowStart = parseInt($("#fixRowStart").val());
 		var fixRowEnd = parseInt($("#fixRowEnd").val());
+		var fixUseRowCut = parseInt($("#fixUseRowCut").is(":checked"))
 		var fix = $("#fixes > .fix[data-fixrow='" + fixRow + "']");
 	
 		if (fix.length > 0) {
@@ -43,16 +44,17 @@ function addFix() {
 			alert("First plank length, Row start position or Row end position must be set");
 			$("#fixPlankLength").focus();
 		} else {
-			addFixHtml(fixRow, fixPlankLength, fixRowStart, fixRowEnd);
+			addFixHtml(fixRow, fixPlankLength, fixRowStart, fixRowEnd, fixUseRowCut);
 			$("#fixRow").val($("#fixRow").attr("min")).focus();
 			$("#fixPlankLength").val($("#fixPlankLength").attr("min"));
 			$("#fixRowStart").val("0");
 			$("#fixRowEnd").val("0");
+			updateErrorCorrections();
 		}
 	}
 }
 
-function addFixHtml(row, plankLength, rowStart, rowEnd) {
+function addFixHtml(row, plankLength, rowStart, rowEnd, useRowCut) {
 	var fixes = getFixes();
 
 	if (!reInteger.test(rowEnd)) {
@@ -63,11 +65,16 @@ function addFixHtml(row, plankLength, rowStart, rowEnd) {
 		rowStart = 0;
 	}
 
+	if (!reInteger.test(useRowCut)) {
+		useRowCut = 0;
+	}
+
 	fixes.push({
 		"plankLength": parseInt(plankLength),
 		"row": parseInt(row),
 		"rowEnd": parseInt(rowEnd),
-		"rowStart": parseInt(rowStart)
+		"rowStart": parseInt(rowStart),
+		"useRowCut": parseInt(useRowCut)
 	});
 
 	fixes.sort(function (a, b) {
@@ -82,8 +89,13 @@ function addFixHtml(row, plankLength, rowStart, rowEnd) {
 
 	template.find("[id]").each(function() {
 		var sender = $(this);
-		sender.addClass(sender.attr("id").split(/(?=[A-Z])/).join("-").toLowerCase());
+		var id = sender.attr("id");
+		sender.addClass(id.split(/(?=[A-Z])/).join("-").toLowerCase());
 		sender.removeAttr("id");
+		
+		if (sender.is(":checkbox") && template.find("label[for='" + id + "']").length > 0) {
+			template.find("label[for='" + id + "']").removeAttr("for").addClass("fix-use-row-cut-label");
+		}
 	});
 
 	for (var i=0; i<fixes.length; i++) {
@@ -92,6 +104,8 @@ function addFixHtml(row, plankLength, rowStart, rowEnd) {
 		group.find(".fix-plank-length").val(fixes[i].plankLength);
 		group.find(".fix-row-start").val(fixes[i].rowStart);
 		group.find(".fix-row-end").val(fixes[i].rowEnd);
+		group.find(".fix-use-row-cut").attr("id", "fixUseRowCut" + fixes[i].row).prop("checked", (fixes[i].useRowCut == 1));
+		group.find(".fix-use-row-cut-label").attr("for", "fixUseRowCut" + fixes[i].row)
 		html.append(group);
 	}
 }
@@ -270,6 +284,7 @@ function calculate() {
 		var error1 = errors.find("#error1").addClass("d-none");
 		var error2 = errors.find("#error2").addClass("d-none");
 		var error3 = errors.find("#error3").addClass("d-none");
+		var error4 = errors.find("#error4").addClass("d-none");
 		errors.find(".alert").addClass("d-none");
 		
 		if (hasInvalid) {
@@ -286,6 +301,22 @@ function calculate() {
 			tbody.find("tr:last > td:last").addClass("text-bg-info");
 		}
 		
+		var shortEnds = layoutResult.layout.filter(function(item) {
+			return (item.planks.length > 0 && item.planks[item.planks.length - 1].length < 100);
+		});
+		
+		if (shortEnds.length > 0) {
+			error4.removeClass("d-none").closest(".alert").removeClass("d-none");
+			
+			var tds = tbody.find("tr:first > td").length;
+			
+			for (var i=0; i<shortEnds.length; i++) {
+				var index = layoutResult.layout.indexOf(shortEnds[i]);
+				planks.find("div.row:eq(" + index + ") > div:last").addClass("border border-2 border-info");
+				tbody.find("tr:eq(" + index + ") > td:eq(" + (tds - 2) + ")").addClass("text-bg-info");
+			}
+		}
+		
 		errors.removeClass("d-none");
 	}
 
@@ -300,6 +331,7 @@ function clone(input) {
 
 function deleteFix(sender) {
 	$(sender).closest("div.fix").remove();
+	updateErrorCorrections();
 }
 
 function getFixes() {
@@ -310,7 +342,8 @@ function getFixes() {
 			"plankLength": parseInt($(this).find(".fix-plank-length").val()),
 			"row": parseInt($(this).find(".fix-row").val()),
 			"rowEnd": parseInt($(this).find(".fix-row-end").val()),
-			"rowStart": parseInt($(this).find(".fix-row-start").val())
+			"rowStart": parseInt($(this).find(".fix-row-start").val()),
+			"useRowCut": Number($(this).find(".fix-use-row-cut").is(":checked"))
 		});
 	});
 
@@ -340,8 +373,8 @@ function getLayout(settings) {
 		result.firstRowWidth = parseInt($("#firstRowWidth").val());
 	}
 
-	var leftovers = 0;
 	var plankLeftovers = [];
+	var plankLeftoversNum = 0;
 	var rowsSkipped = 0;
 
 	var roomLengthWithDistance = Math.round((settings.roomLength * 1000) - (settings.wallDistance * 2));
@@ -399,7 +432,6 @@ function getLayout(settings) {
 		})[0];
 		var maxRowLength = roomLengthWithDistance;
 		var rowLength = 0;
-		var saveLeftovers = 0;
 
 		if (fix && fix.rowStart != 0) {
 			maxRowLength += (fix.rowStart * -1);
@@ -432,113 +464,83 @@ function getLayout(settings) {
 
 		if (i > 0 && settings.removeRows > 1 && (i + 1 + rowsSkipped) % settings.removeRows == 0) {
 			rowsSkipped++;
-			saveLeftovers = leftovers;
 		}
-
-		if (fix != undefined && fix.plankLength > 0) {
-			if (leftovers >= fix.plankLength) {
-				result.trash += (leftovers - fix.plankLength);
-			} else {
-				var diff = (settings.plankLength - fix.plankLength);
-
-				if (diff > 0 && diff >= rules.minStartLength) {
-					plankLeftovers.push({
-						"length": diff,
-						"startCut": false
-					});
-				} else if (diff > 0) {
-					result.trash += diff;
-				}
-
-				result.planksNeeded++;
-				saveLeftovers = leftovers;
-			}
-
-			leftovers = fix.plankLength;
-		}
-
-		if (saveLeftovers > 0) {
-			if (saveLeftovers >= rules.minStartLength) {
-				plankLeftovers.push({
-					"length": saveLeftovers,
-					"startCut": true
-				});
-			} else {
-				result.trash += saveLeftovers;
-			}
-
-			saveLeftovers = 0;
-
-			if (fix == undefined) {
-				leftovers = settings.plankLength;
-				result.planksNeeded++;
-			}
-		}
-
-		if (leftovers > 0) {
-			if (leftovers >= rules.minStartLength) {
-				result.layout[i].planks.push({
-					"start": rowLength,
-					"stop": rowLength + leftovers,
-					"length": leftovers,
-					"valid": false
-				});
-
-				rowLength += leftovers;
-			} else {
-				result.trash += leftovers;
-			}
-
-			leftovers = 0;
-		}
-
+		
 		while (rowLength < maxRowLength) {
-			if (rowLength + settings.plankLength <= maxRowLength) {
-				result.layout[i].planks.push({
-					"start": rowLength,
-					"stop": rowLength + settings.plankLength,
-					"length": settings.plankLength,
-					"valid": false
+			var isFirst = (rowLength == 0);
+			var isLast = false;
+			var plankLength = settings.plankLength;
+			var plankLeftover = null;
+			
+			if (isFirst) {
+				var starters = plankLeftovers.filter(function(item) {
+					return item.startCut;
 				});
-
-				rowLength += settings.plankLength;
-			} else {
-				var diff = maxRowLength - rowLength;
-
-				/*if (result.layout[i].planks.length > 0 && diff < settings.plankWidth && result.layout[i].planks[0].length - (settings.plankWidth - diff) >= rules.minStartLength) {
-					rowLength -= (settings.plankWidth - diff);
-					result.layout[i].planks[0].length -= (settings.plankWidth - diff);
-
-					for (var j=0; j<result.layout[i].planks.length; j++) {
-						if (j > 0) {
-							result.layout[i].planks[j].start -= (settings.plankWidth - diff);
-						}
-
-						result.layout[i].planks[j].stop -= (settings.plankWidth - diff);
-					}
-
-					diff = settings.plankWidth;
-				}*/
 				
-				result.layout[i].planks.push({
-					"start": rowLength,
-					"stop": rowLength + diff,
-					"length": diff,
-					"valid": false
-				});
-
-				rowLength += diff;
-
-				leftovers = settings.plankLength - diff;
+				if (fix != undefined && fix.plankLength > 0) {
+					plankLength = fix.plankLength;
+				} else if (starters.length > 0) {
+					plankLeftover = starters.sort((a, b) => (a.number > b.number ? 1 : (a.number < b.number ? -1 : 0)))[starters.length - 1];
+					plankLength = plankLeftover.length;
+				}
 			}
+			
+			if (isFirst && plankLength < settings.plankLength) {
+				plankLeftover = plankLeftovers.sort((a, b) => (a.length > b.length ? 1 : (a.length < b.length ? -1 : 0))).filter(function(item) {
+					return (item.length >= plankLength && item.startCut);
+				})[0];
+			}
+			
+			isLast = (rowLength + plankLength >= maxRowLength);
+		
+			if (rowLength + plankLength > maxRowLength) {
+				plankLength = maxRowLength - rowLength;
+				
+				plankLeftover = plankLeftovers.sort((a, b) => (a.length > b.length ? 1 : (a.length < b.length ? -1 : 0))).filter(function(item) {
+					return (item.length >= plankLength && ((fix && fix.useRowCut) || item.row != (i + 1)) && !item.startCut);
+				})[0];
+			}
+			
+			result.layout[i].planks.push({
+				"start": rowLength,
+				"stop": rowLength + plankLength,
+				"length": plankLength,
+				"valid": false
+			});
 
-			result.planksNeeded++;
+			rowLength += plankLength;
+
+			if (plankLeftover != null) {
+				result.trash += plankLeftover.length - plankLength;
+				plankLeftovers.splice(plankLeftovers.indexOf(plankLeftover), 1);
+			} else {
+				result.planksNeeded++;
+				
+				var diff = settings.plankLength - plankLength;
+				
+				if (diff > 0) {
+					if (isLast && diff >= rules.minStartLength) {
+						plankLeftovers.push({
+							"length": diff,
+							"number": plankLeftoversNum++,
+							"row": (i + 1),
+							"startCut": true
+						});
+					} else if (isFirst && fix) {
+						plankLeftovers.push({
+							"length": diff,
+							"number": plankLeftoversNum++,
+							"row": (i + 1),
+							"startCut": false
+						});
+					} else {
+						result.trash += diff;
+					}
+				}
+			}
 		}
 	}
 
-	result.trash += leftovers;
-	leftovers = 0;
-	
 	for (var i=0; i<plankLeftovers.length; i++) {
 		result.trash += plankLeftovers[i].length;
 	}
@@ -573,7 +575,7 @@ function getLink() {
 
 	var kvFixes = [];
 	for (var i=0; i<fixes.length; i++) {
-		kvFixes.push(fixes[i].row + ":" + fixes[i].plankLength + ":" + fixes[i].rowStart + ":" + fixes[i].rowEnd);
+		kvFixes.push(fixes[i].row + ":" + fixes[i].plankLength + ":" + fixes[i].rowStart + ":" + fixes[i].rowEnd + ":" + fixes[i].useRowCut);
 	}
 
 	var url = location.href.split("?")[0];
@@ -607,7 +609,7 @@ function parseQuery(queryString) {
 	return query;
 }
 
-function toggleErrorCorrection(enabled) {
+function toggleAutoCorrect(enabled) {
 	$("#removeRows").attr("disabled", enabled);
 	$(".fix-rows input").attr("disabled", enabled);
 	
@@ -747,6 +749,22 @@ function tryFixLayoutPlankLength(layoutResult, settings, cutDistance) {
 	return layoutResult;
 }
 
+function updateErrorCorrections() {
+	var enabled = 0;
+	
+	if ($("#autoCorrect").is(":checked")) {
+		enabled++;
+	} else {
+		if ($("#removeRows").val() != "0") {
+			enabled++;
+		}
+		
+		enabled += getFixes().length;
+	}
+	
+	$("#errorCorrection .accordion-button span").text(enabled > 0 ? "(" + enabled + ")" : "");
+}
+
 function validate(layoutResult, cutDistance) {
 	var isValid = true;
 
@@ -858,7 +876,7 @@ $(document).ready(function() {
 			var fix = $("#fixes > .fix[data-fixrow='" + pair[0] + "']");
 
 			if (fix.length == 0) {
-				addFixHtml(pair[0], pair[1], pair[2], pair[3]);
+				addFixHtml(pair[0], pair[1], pair[2], pair[3], pair[4]);
 			}
 		}
 	}
@@ -885,8 +903,14 @@ $(document).ready(function() {
 	});
 	
 	$("#autoCorrect").change(function() {
-		toggleErrorCorrection($(this).is(":checked"));
+		toggleAutoCorrect($(this).is(":checked"));
 	}).trigger("change");
+	
+	$("#errorCorrection input").change(function() {
+		updateErrorCorrections();
+	});
+	
+	updateErrorCorrections();
 	
 	$(document).on("keydown", ".fix-row, .fox-plank-length", function(e) {
 		if (e.key == "Delete") {
